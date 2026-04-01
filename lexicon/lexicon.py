@@ -22,7 +22,7 @@ LEXICON_COMMANDS: dict[str, str] = {
 }
 
 PLANS = {
-    "sub_1w": "🗓 1 неделя",
+    "sub_free": "🗓 Пробный период 3 дня ",
     "sub_1m": "📅 1 месяц",
     "sub_2m": "📆 2 месяца",
 }

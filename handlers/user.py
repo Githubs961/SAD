@@ -41,9 +41,14 @@ async def manual(message: Message):
 @router.callback_query(F.data.in_(PLANS.keys()))
 async def sub_duration(callback: CallbackQuery):
     plan = callback.data # какую подписку выбрал пользователь при нажатии на инлайнкнопку
-    await callback.message.edit_text(text=f'Вы выбрали подписку: {PLANS[plan]}\nСпособ оплаты:',
-                                     reply_markup=pay_keyboard(plan.split('_')[1]))
-                                    # функция pay_keyboard принимает значение длительности подписки
+    if plan == 'sub_free': # выбрал пробный период
+
+        await callback.message.answer(text='Пробный период активирован')
+
+    else:
+        await callback.message.edit_text(text=f'Вы выбрали подписку: {PLANS[plan]}\nСпособ оплаты:',
+                                         reply_markup=pay_keyboard(plan.split('_')[1]))
+                                        # функция pay_keyboard принимает значение длительности подписки
     await callback.answer()
 
 

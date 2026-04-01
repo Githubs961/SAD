@@ -26,7 +26,7 @@ keyboard = ReplyKeyboardMarkup(
 # Создание инлайн клавиатуры для Подписок
 sub_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text='7 дней 30 ₽', callback_data='sub_1w')],
+        [InlineKeyboardButton(text='Пробный период 3 дня ', callback_data='sub_free')],
         [InlineKeyboardButton(text='1 месяц 149 ₽', callback_data='sub_1m')],
         [InlineKeyboardButton(text='2 месяца 249 ₽', callback_data='sub_2m')]
     ]
