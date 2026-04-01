@@ -1,0 +1,287 @@
+{
+    "response": {
+        "total": 7,
+        "users": [
+            {
+                "uuid": "2808e0ce-e6a8-4760-862e-5a664d534df9",
+                "id": 8,
+                "shortUuid": "ZYuL7s6vqn27Qezh",
+                "username": "Xyu",
+                "status": "ACTIVE",
+                "trafficLimitBytes": 10737418240000,
+                "trafficLimitStrategy": "NO_RESET",
+                "expireAt": "2099-01-21T07:23:10.000Z",
+                "telegramId": null,
+                "email": null,
+                "description": "",
+                "tag": null,
+                "hwidDeviceLimit": 0,
+                "externalSquadUuid": null,
+                "trojanPassword": "SYq6qFrjSBRqgVQqz6d7pTffbbfk6vD4",
+                "vlessUuid": "49083e15-7838-4d90-a038-0f256579cbee",
+                "ssPassword": "9wPbGGR5bM2GBc8xGP9LKn-hNKEUY0oj",
+                "lastTriggeredThreshold": 0,
+                "subRevokedAt": null,
+                "subLastUserAgent": "v2raytun/android",
+                "subLastOpenedAt": "2026-04-01T02:42:19.809Z",
+                "lastTrafficResetAt": null,
+                "createdAt": "2026-01-21T07:23:38.221Z",
+                "updatedAt": "2026-04-01T08:03:06.742Z",
+                "subscriptionUrl": "https://subsubarikvpn.mooo.com/ZYuL7s6vqn27Qezh",
+                "activeInternalSquads": [
+                    {
+                        "uuid": "6002d566-a23d-40d4-82c7-624c2a7777b0",
+                        "name": "Default-Squad"
+                    }
+                ],
+                "userTraffic": {
+                    "usedTrafficBytes": 60579710731,
+                    "lifetimeUsedTrafficBytes": 60579710731,
+                    "onlineAt": "2026-04-01T02:44:15.022Z",
+                    "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
+                    "firstConnectedAt": "2026-02-14T12:27:00.043Z"
+                }
+            },
+            {
+                "uuid": "5bad36ab-8700-4b0e-abb5-453b90e96d04",
+                "id": 7,
+                "shortUuid": "WUurSfKB6xLGGRWY",
+                "username": "Elina",
+                "status": "ACTIVE",
+                "trafficLimitBytes": 0,
+                "trafficLimitStrategy": "NO_RESET",
+                "expireAt": "2099-01-02T17:56:36.000Z",
+                "telegramId": null,
+                "email": null,
+                "description": "",
+                "tag": null,
+                "hwidDeviceLimit": null,
+                "externalSquadUuid": null,
+                "trojanPassword": "4W1HXRhszqFt5tdrNsLrMcrg6UHp1NYK",
+                "vlessUuid": "9fedb9e6-9c7e-4d42-9894-093dcf1f3a56",
+                "ssPassword": "s66T5vGKYzFZyot_t8Pyj8an1SxW3-xU",
+                "lastTriggeredThreshold": 0,
+                "subRevokedAt": null,
+                "subLastUserAgent": "v2raytun/ios",
+                "subLastOpenedAt": "2026-01-27T23:26:41.407Z",
+                "lastTrafficResetAt": null,
+                "createdAt": "2026-01-02T17:56:47.633Z",
+                "updatedAt": "2026-01-02T17:56:47.631Z",
+                "subscriptionUrl": "https://subsubarikvpn.mooo.com/WUurSfKB6xLGGRWY",
+                "activeInternalSquads": [
+                    {
+                        "uuid": "6002d566-a23d-40d4-82c7-624c2a7777b0",
+                        "name": "Default-Squad"
+                    }
+                ],
+                "userTraffic": {
+                    "usedTrafficBytes": 329208490380,
+                    "lifetimeUsedTrafficBytes": 329208490380,
+                    "onlineAt": "2026-04-01T09:24:45.084Z",
+                    "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
+                    "firstConnectedAt": "2026-01-02T17:58:15.027Z"
+                }
+            },
+            {
+                "uuid": "86083288-aaf7-4367-b17c-a7ea5c76e21d",
+                "id": 6,
+                "shortUuid": "pwStE5JnxfoQHUoF",
+                "username": "Mama",
+                "status": "ACTIVE",
+                "trafficLimitBytes": 0,
+                "trafficLimitStrategy": "NO_RESET",
+                "expireAt": "2099-01-02T17:23:37.000Z",
+                "telegramId": null,
+                "email": null,
+                "description": "",
+                "tag": null,
+                "hwidDeviceLimit": null,
+                "externalSquadUuid": null,
+                "trojanPassword": "C9HdUqDwC-A11YDMnek8dqEQCf3FZe-F",
+                "vlessUuid": "d8b2eb6e-a5c5-4ee5-a531-ac5ef5c3d35a",
+                "ssPassword": "vqGdSPGK9oM0f5WpQ-kcJuvnW1J73BLc",
+                "lastTriggeredThreshold": 0,
+                "subRevokedAt": null,
+                "subLastUserAgent": "v2raytun/ios",
+                "subLastOpenedAt": "2026-04-01T03:51:32.445Z",
+                "lastTrafficResetAt": null,
+                "createdAt": "2026-01-02T17:23:51.068Z",
+                "updatedAt": "2026-01-02T17:23:51.067Z",
+                "subscriptionUrl": "https://subsubarikvpn.mooo.com/pwStE5JnxfoQHUoF",
+                "activeInternalSquads": [
+                    {
+                        "uuid": "6002d566-a23d-40d4-82c7-624c2a7777b0",
+                        "name": "Default-Squad"
+                    }
+                ],
+                "userTraffic": {
+                    "usedTrafficBytes": 196295725066,
+                    "lifetimeUsedTrafficBytes": 196295725066,
+                    "onlineAt": "2026-04-01T04:51:15.022Z",
+                    "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
+                    "firstConnectedAt": "2026-01-02T17:24:45.034Z"
+                }
+            },
+            {
+                "uuid": "adefd64c-ab1e-4564-bc11-727b0f792361",
+                "id": 5,
+                "shortUuid": "LT-AxTD3RG6bvEtK",
+                "username": "Edik",
+                "status": "ACTIVE",
+                "trafficLimitBytes": 0,
+                "trafficLimitStrategy": "NO_RESET",
+                "expireAt": "2099-01-02T17:19:19.000Z",
+                "telegramId": null,
+                "email": null,
+                "description": "",
+                "tag": null,
+                "hwidDeviceLimit": null,
+                "externalSquadUuid": null,
+                "trojanPassword": "2pfWtHb6J-sLRn5ybxoXDqsf7s-2Y6kN",
+                "vlessUuid": "ea5c2a92-bf29-479a-a74b-5b3ccd5afaa2",
+                "ssPassword": "SdGnCaDp0TbHsrs57zwSHjVwvrPHBAYQ",
+                "lastTriggeredThreshold": 0,
+                "subRevokedAt": null,
+                "subLastUserAgent": "koala-clash/1.1.0",
+                "subLastOpenedAt": "2026-03-30T16:39:49.854Z",
+                "lastTrafficResetAt": null,
+                "createdAt": "2026-01-02T17:19:26.233Z",
+                "updatedAt": "2026-01-02T17:19:26.232Z",
+                "subscriptionUrl": "https://subsubarikvpn.mooo.com/LT-AxTD3RG6bvEtK",
+                "activeInternalSquads": [
+                    {
+                        "uuid": "6002d566-a23d-40d4-82c7-624c2a7777b0",
+                        "name": "Default-Squad"
+                    }
+                ],
+                "userTraffic": {
+                    "usedTrafficBytes": 22817573477,
+                    "lifetimeUsedTrafficBytes": 22817573477,
+                    "onlineAt": "2026-03-30T18:30:45.027Z",
+                    "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
+                    "firstConnectedAt": "2026-01-02T17:20:15.031Z"
+                }
+            },
+            {
+                "uuid": "27cbd061-37d1-43d0-ad37-ccc0732778e2",
+                "id": 4,
+                "shortUuid": "_t5snFBDwXc2fYSq",
+                "username": "Babushka",
+                "status": "ACTIVE",
+                "trafficLimitBytes": 0,
+                "trafficLimitStrategy": "NO_RESET",
+                "expireAt": "2099-01-02T17:15:40.000Z",
+                "telegramId": null,
+                "email": null,
+                "description": "",
+                "tag": null,
+                "hwidDeviceLimit": null,
+                "externalSquadUuid": null,
+                "trojanPassword": "0MXEwBY5D2Tvdwkcb03Wr7QE0SHkpNS-",
+                "vlessUuid": "cba78ec0-acd6-44aa-bd20-11bcff5e7694",
+                "ssPassword": "y_eo81cZ-BJ7QL_YrVNQf6Frunugoj3e",
+                "lastTriggeredThreshold": 0,
+                "subRevokedAt": null,
+                "subLastUserAgent": "koala-clash/v0.2.8",
+                "subLastOpenedAt": "2026-04-01T08:06:47.951Z",
+                "lastTrafficResetAt": null,
+                "createdAt": "2026-01-02T17:16:02.803Z",
+                "updatedAt": "2026-01-02T17:16:02.801Z",
+                "subscriptionUrl": "https://subsubarikvpn.mooo.com/_t5snFBDwXc2fYSq",
+                "activeInternalSquads": [
+                    {
+                        "uuid": "6002d566-a23d-40d4-82c7-624c2a7777b0",
+                        "name": "Default-Squad"
+                    }
+                ],
+                "userTraffic": {
+                    "usedTrafficBytes": 493753661915,
+                    "lifetimeUsedTrafficBytes": 493753661915,
+                    "onlineAt": "2026-04-01T09:46:15.037Z",
+                    "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
+                    "firstConnectedAt": "2026-01-02T17:32:00.044Z"
+                }
+            },
+            {
+                "uuid": "a6eab391-d8fb-4828-8934-3420c33773a4",
+                "id": 3,
+                "shortUuid": "_KSKdY7SASUaQ-2G",
+                "username": "Armen",
+                "status": "ACTIVE",
+                "trafficLimitBytes": 10737418240000,
+                "trafficLimitStrategy": "NO_RESET",
+                "expireAt": "2099-01-02T17:12:19.000Z",
+                "telegramId": null,
+                "email": null,
+                "description": "",
+                "tag": null,
+                "hwidDeviceLimit": null,
+                "externalSquadUuid": null,
+                "trojanPassword": "NdrbM221FUW3sx0eyoqKBq-f6jq7SSjk",
+                "vlessUuid": "79b3739d-f618-42dd-a6c5-966c1d490222",
+                "ssPassword": "f7DKbUW4EDXN-gbptLgRqtgmdt061ZY9",
+                "lastTriggeredThreshold": 0,
+                "subRevokedAt": null,
+                "subLastUserAgent": "v2raytun/ios",
+                "subLastOpenedAt": "2026-04-01T05:47:13.585Z",
+                "lastTrafficResetAt": null,
+                "createdAt": "2026-01-02T17:12:28.729Z",
+                "updatedAt": "2026-04-01T08:03:52.449Z",
+                "subscriptionUrl": "https://subsubarikvpn.mooo.com/_KSKdY7SASUaQ-2G",
+                "activeInternalSquads": [
+                    {
+                        "uuid": "6002d566-a23d-40d4-82c7-624c2a7777b0",
+                        "name": "Default-Squad"
+                    }
+                ],
+                "userTraffic": {
+                    "usedTrafficBytes": 697641404261,
+                    "lifetimeUsedTrafficBytes": 697641404261,
+                    "onlineAt": "2026-04-01T09:17:30.091Z",
+                    "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
+                    "firstConnectedAt": "2026-01-02T17:13:30.067Z"
+                }
+            },
+            {
+                "uuid": "28f771e3-81ad-46f9-9e61-5cfb1a42c391",
+                "id": 2,
+                "shortUuid": "gtGZARRSbmj6UXUv",
+                "username": "Sergey",
+                "status": "ACTIVE",
+                "trafficLimitBytes": 0,
+                "trafficLimitStrategy": "NO_RESET",
+                "expireAt": "2099-01-02T17:04:14.000Z",
+                "telegramId": null,
+                "email": null,
+                "description": "",
+                "tag": null,
+                "hwidDeviceLimit": null,
+                "externalSquadUuid": null,
+                "trojanPassword": "GunszRv6wgZF_Err4pN1m0L-FyNmUMkb",
+                "vlessUuid": "e8ddb1e8-1699-4118-972f-cabda8a8d879",
+                "ssPassword": "zVvRFJUuCpQ6DH6Mz0GCakkCtPh0P-4E",
+                "lastTriggeredThreshold": 0,
+                "subRevokedAt": null,
+                "subLastUserAgent": "v2raytun/ios",
+                "subLastOpenedAt": "2026-04-01T08:54:26.323Z",
+                "lastTrafficResetAt": null,
+                "createdAt": "2026-01-02T17:04:46.447Z",
+                "updatedAt": "2026-01-02T17:04:46.446Z",
+                "subscriptionUrl": "https://subsubarikvpn.mooo.com/gtGZARRSbmj6UXUv",
+                "activeInternalSquads": [
+                    {
+                        "uuid": "6002d566-a23d-40d4-82c7-624c2a7777b0",
+                        "name": "Default-Squad"
+                    }
+                ],
+                "userTraffic": {
+                    "usedTrafficBytes": 716763276050,
+                    "lifetimeUsedTrafficBytes": 716763276050,
+                    "onlineAt": "2026-04-01T08:56:45.025Z",
+                    "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
+                    "firstConnectedAt": "2026-01-02T17:05:45.045Z"
+                }
+            }
+        ]
+    }
+}
