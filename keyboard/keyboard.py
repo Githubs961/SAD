@@ -15,8 +15,9 @@ async def set_main_menu(bot: Bot):
 # Создаем объект главной клавиатуры
 keyboard = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text='Подписка')],
-        [KeyboardButton(text='Инструкция')]
+        [KeyboardButton(text='🛜 Получить доступ')],
+        [KeyboardButton(text='🏡 Личный кабинет'),KeyboardButton(text='ℹ️ Инструкция')]
+
     ],
     resize_keyboard=True,
     is_persistent=True)
@@ -26,7 +27,7 @@ keyboard = ReplyKeyboardMarkup(
 # Создание инлайн клавиатуры для Подписок
 sub_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text='Пробный период 3 дня ', callback_data='sub_free')],
+        [InlineKeyboardButton(text='7 дней  49 ₽', callback_data='sub_1w')],
         [InlineKeyboardButton(text='1 месяц 149 ₽', callback_data='sub_1m')],
         [InlineKeyboardButton(text='2 месяца 249 ₽', callback_data='sub_2m')]
     ]
@@ -37,8 +38,8 @@ sub_keyboard = InlineKeyboardMarkup(
 def pay_keyboard(plan: str):
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="⭐ Telegram Stars", callback_data=f"pay_{plan}")],
             [InlineKeyboardButton(text="💳 СБП", callback_data=f"paysbp_{plan}")],
+            [InlineKeyboardButton(text="⭐ Telegram Stars", callback_data=f"pay_{plan}")],
             [InlineKeyboardButton(text="⬅️ Назад", callback_data="back")]
         ]
     )

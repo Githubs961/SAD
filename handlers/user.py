@@ -3,8 +3,10 @@ from aiogram.types import Message, CallbackQuery, PreCheckoutQuery, LabeledPrice
 from aiogram.filters import Command, CommandStart
 from aiogram import F
 from aiogram.utils.markdown import hlink
+from remnawave_api.api_remnavawe import get_user_by_telegram_id, create_free_user
 from keyboard.keyboard import keyboard, sub_keyboard, pay_keyboard
 from lexicon.lexicon import LEXICON_RU, PLANS, PAY_STARS
+from remnawave_api.remnawave_client import  client
 
 # Инициализируем роутер уровня модуля
 router = Router()
@@ -24,13 +26,31 @@ async def process_help_command(message: Message):
                          )
 
 
-@router.message(F.text == 'Подписка')
+@router.message(F.text == '🛜 Получить доступ')
 async def subscription_list(message: Message):
-    await message.answer(text= LEXICON_RU['subscription'],
-                         reply_markup=sub_keyboard)
+    # Проверка что нет пользователя с таким tg_id и после выдать пробную подписку
+    # if await client.get_user_by_telegram_id(message.from_user.id,message.from_user.username):
+    #     link_vpn = await client.get_subscription_url(message.from_user.id)
+    if not await get_user_by_telegram_id(str(message.from_user.id)): #если пользователя нет то создаем
+        sub_url = await create_free_user(telegram_id=str(message.from_user.id),
+                                         username=message.from_user.username)# ссылка для подключения
+        await message.answer(text=f'🎁 Пробный период 3 дня активирован\n🔗 Ссылка для подключения:\n{sub_url}',
+                             reply_markup=sub_keyboard)
+    else:
+        await message.answer(text= LEXICON_RU['subscription'],
+                             reply_markup=sub_keyboard)
 
 
-@router.message(F.text == 'Инструкция')
+
+@router.message(F.text == '🏡 Личный кабинет')
+async def manual(message: Message):
+    await message.answer(text= LEXICON_RU['personal_account'],
+                         reply_markup=keyboard,
+                         disable_web_page_preview=True
+                         )
+
+
+@router.message(F.text == 'ℹ️ Инструкция')
 async def manual(message: Message):
     await message.answer(text= LEXICON_RU['/help'],
                          reply_markup=keyboard,
@@ -41,12 +61,7 @@ async def manual(message: Message):
 @router.callback_query(F.data.in_(PLANS.keys()))
 async def sub_duration(callback: CallbackQuery):
     plan = callback.data # какую подписку выбрал пользователь при нажатии на инлайнкнопку
-    if plan == 'sub_free': # выбрал пробный период
-
-        await callback.message.answer(text='Пробный период активирован')
-
-    else:
-        await callback.message.edit_text(text=f'Вы выбрали подписку: {PLANS[plan]}\nСпособ оплаты:',
+    await callback.message.edit_text(text=f'Вы выбрали подписку: {PLANS[plan]}\nСпособ оплаты 👇',
                                          reply_markup=pay_keyboard(plan.split('_')[1]))
                                         # функция pay_keyboard принимает значение длительности подписки
     await callback.answer()

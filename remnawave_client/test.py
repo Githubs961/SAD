@@ -7,7 +7,6 @@ from typing import Dict, List, Optional, Any
 from httpx import AsyncClient, Response
 from datetime import datetime, timedelta
 
-from remnawave.models.subscription import ActiveInternalSquadDto
 
 load_dotenv()  # вызов переменных окружения, файл ".env"
 
@@ -129,6 +128,18 @@ class RemnawaveUsersClient:
         await self.client.aclose()
 
 
+    async def get_all_telegram_ids(self):
+        """Получить список ВСЕХ telegram_id пользователей"""
+        users = await self.get_all_users()
+        telegram_ids = []
+
+        for user in users:
+            tg_id = user.get("telegramId")
+            if tg_id is not None:  # проверяем, что поле существует и не null
+                telegram_ids.append(tg_id)
+        return telegram_ids
+
+
 # ====================== Пример использования ======================
 
 async def main():
@@ -143,15 +154,16 @@ async def main():
         users = await client.get_all_users()
 
         print(f"\nВсего пользователей в системе: {len(users)}")
-
+        telega = await client.get_all_telegram_ids()
+        print(await client.get_all_telegram_ids())
         if users:
             # print("\nПример первого пользователя:")
             # print(json.dumps(users[0], indent=2, ensure_ascii=False))
 
         # 2. Создать нового пользователя
-            # Создание пользователя
+            #Создание пользователя
             new_user = await client.create_user(
-                username="qwerty",
+                username="qwerty122",
                 activeInternalSquads=["6002d566-a23d-40d4-82c7-624c2a7777b0"],
                 trafficLimitBytes=100,  # 100 ГБ
                 expireAt=30,  # 30 дней

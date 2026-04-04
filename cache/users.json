@@ -1,7 +1,83 @@
 {
     "response": {
-        "total": 7,
+        "total": 9,
         "users": [
+            {
+                "uuid": "bdf45c9f-7626-4093-8947-da70ebd86e97",
+                "id": 30,
+                "shortUuid": "CF3_TuUFbZfCequ8",
+                "username": "monako113",
+                "status": "ACTIVE",
+                "trafficLimitBytes": 10737418240,
+                "trafficLimitStrategy": "MONTH",
+                "expireAt": "2026-04-05T21:33:20.169Z",
+                "telegramId": 758504107,
+                "email": null,
+                "description": "Пробный период 3 дня",
+                "tag": null,
+                "hwidDeviceLimit": 1,
+                "externalSquadUuid": null,
+                "trojanPassword": "p318a29SpAX-AEhzzpgMrHA-KRuprgqE",
+                "vlessUuid": "d4e35ad8-45f8-4445-972d-7cab35f0b75d",
+                "ssPassword": "NWKquhMbW28KXJzzYbVXqzapsNdnyYLC",
+                "lastTriggeredThreshold": 0,
+                "subRevokedAt": null,
+                "lastTrafficResetAt": null,
+                "createdAt": "2026-04-02T21:33:19.840Z",
+                "updatedAt": "2026-04-02T21:33:19.840Z",
+                "subscriptionUrl": "https://subsubarikvpn.mooo.com/CF3_TuUFbZfCequ8",
+                "activeInternalSquads": [
+                    {
+                        "uuid": "6002d566-a23d-40d4-82c7-624c2a7777b0",
+                        "name": "Default-Squad"
+                    }
+                ],
+                "userTraffic": {
+                    "usedTrafficBytes": 0,
+                    "lifetimeUsedTrafficBytes": 0,
+                    "onlineAt": null,
+                    "lastConnectedNodeUuid": null,
+                    "firstConnectedAt": null
+                }
+            },
+            {
+                "uuid": "b3d9e34a-a3ae-4615-a6a3-7188c6d87089",
+                "id": 28,
+                "shortUuid": "5AW30KvMwP482YXE",
+                "username": "ivanov113",
+                "status": "EXPIRED",
+                "trafficLimitBytes": 0,
+                "trafficLimitStrategy": "NO_RESET",
+                "expireAt": "2026-04-02T19:28:00.000Z",
+                "telegramId": null,
+                "email": "playmarket9618113@gmail.com",
+                "description": "устройство 1",
+                "tag": null,
+                "hwidDeviceLimit": 2,
+                "externalSquadUuid": null,
+                "trojanPassword": "Srr8XaTDM9wYUdKHXPZcEHv0rd_PJZtm",
+                "vlessUuid": "b321e8af-0faf-49a0-ac18-f06cabb5ece3",
+                "ssPassword": "ffWMJP3qgVSkKfEz2_QmvW748HU7a4gQ",
+                "lastTriggeredThreshold": 0,
+                "subRevokedAt": null,
+                "lastTrafficResetAt": null,
+                "createdAt": "2026-04-02T16:03:45.283Z",
+                "updatedAt": "2026-04-02T19:28:00.018Z",
+                "subscriptionUrl": "https://subsubarikvpn.mooo.com/5AW30KvMwP482YXE",
+                "activeInternalSquads": [
+                    {
+                        "uuid": "6002d566-a23d-40d4-82c7-624c2a7777b0",
+                        "name": "Default-Squad"
+                    }
+                ],
+                "userTraffic": {
+                    "usedTrafficBytes": 55209282,
+                    "lifetimeUsedTrafficBytes": 55209282,
+                    "onlineAt": "2026-04-02T20:56:30.053Z",
+                    "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
+                    "firstConnectedAt": "2026-04-02T16:04:45.018Z"
+                }
+            },
             {
                 "uuid": "2808e0ce-e6a8-4760-862e-5a664d534df9",
                 "id": 8,
@@ -22,8 +98,6 @@
                 "ssPassword": "9wPbGGR5bM2GBc8xGP9LKn-hNKEUY0oj",
                 "lastTriggeredThreshold": 0,
                 "subRevokedAt": null,
-                "subLastUserAgent": "v2raytun/android",
-                "subLastOpenedAt": "2026-04-01T02:42:19.809Z",
                 "lastTrafficResetAt": null,
                 "createdAt": "2026-01-21T07:23:38.221Z",
                 "updatedAt": "2026-04-01T08:03:06.742Z",
@@ -35,9 +109,9 @@
                     }
                 ],
                 "userTraffic": {
-                    "usedTrafficBytes": 60579710731,
-                    "lifetimeUsedTrafficBytes": 60579710731,
-                    "onlineAt": "2026-04-01T02:44:15.022Z",
+                    "usedTrafficBytes": 61448874850,
+                    "lifetimeUsedTrafficBytes": 61448874850,
+                    "onlineAt": "2026-04-02T21:14:15.018Z",
                     "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
                     "firstConnectedAt": "2026-02-14T12:27:00.043Z"
                 }
@@ -62,8 +136,6 @@
                 "ssPassword": "s66T5vGKYzFZyot_t8Pyj8an1SxW3-xU",
                 "lastTriggeredThreshold": 0,
                 "subRevokedAt": null,
-                "subLastUserAgent": "v2raytun/ios",
-                "subLastOpenedAt": "2026-01-27T23:26:41.407Z",
                 "lastTrafficResetAt": null,
                 "createdAt": "2026-01-02T17:56:47.633Z",
                 "updatedAt": "2026-01-02T17:56:47.631Z",
@@ -75,9 +147,9 @@
                     }
                 ],
                 "userTraffic": {
-                    "usedTrafficBytes": 329208490380,
-                    "lifetimeUsedTrafficBytes": 329208490380,
-                    "onlineAt": "2026-04-01T09:24:45.084Z",
+                    "usedTrafficBytes": 340222380705,
+                    "lifetimeUsedTrafficBytes": 340222380705,
+                    "onlineAt": "2026-04-02T21:35:30.043Z",
                     "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
                     "firstConnectedAt": "2026-01-02T17:58:15.027Z"
                 }
@@ -102,8 +174,6 @@
                 "ssPassword": "vqGdSPGK9oM0f5WpQ-kcJuvnW1J73BLc",
                 "lastTriggeredThreshold": 0,
                 "subRevokedAt": null,
-                "subLastUserAgent": "v2raytun/ios",
-                "subLastOpenedAt": "2026-04-01T03:51:32.445Z",
                 "lastTrafficResetAt": null,
                 "createdAt": "2026-01-02T17:23:51.068Z",
                 "updatedAt": "2026-01-02T17:23:51.067Z",
@@ -115,9 +185,9 @@
                     }
                 ],
                 "userTraffic": {
-                    "usedTrafficBytes": 196295725066,
-                    "lifetimeUsedTrafficBytes": 196295725066,
-                    "onlineAt": "2026-04-01T04:51:15.022Z",
+                    "usedTrafficBytes": 198480785115,
+                    "lifetimeUsedTrafficBytes": 198480785115,
+                    "onlineAt": "2026-04-02T21:35:30.043Z",
                     "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
                     "firstConnectedAt": "2026-01-02T17:24:45.034Z"
                 }
@@ -142,8 +212,6 @@
                 "ssPassword": "SdGnCaDp0TbHsrs57zwSHjVwvrPHBAYQ",
                 "lastTriggeredThreshold": 0,
                 "subRevokedAt": null,
-                "subLastUserAgent": "koala-clash/1.1.0",
-                "subLastOpenedAt": "2026-03-30T16:39:49.854Z",
                 "lastTrafficResetAt": null,
                 "createdAt": "2026-01-02T17:19:26.233Z",
                 "updatedAt": "2026-01-02T17:19:26.232Z",
@@ -155,9 +223,9 @@
                     }
                 ],
                 "userTraffic": {
-                    "usedTrafficBytes": 22817573477,
-                    "lifetimeUsedTrafficBytes": 22817573477,
-                    "onlineAt": "2026-03-30T18:30:45.027Z",
+                    "usedTrafficBytes": 23034408058,
+                    "lifetimeUsedTrafficBytes": 23034408058,
+                    "onlineAt": "2026-04-02T18:08:15.018Z",
                     "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
                     "firstConnectedAt": "2026-01-02T17:20:15.031Z"
                 }
@@ -182,8 +250,6 @@
                 "ssPassword": "y_eo81cZ-BJ7QL_YrVNQf6Frunugoj3e",
                 "lastTriggeredThreshold": 0,
                 "subRevokedAt": null,
-                "subLastUserAgent": "koala-clash/v0.2.8",
-                "subLastOpenedAt": "2026-04-01T08:06:47.951Z",
                 "lastTrafficResetAt": null,
                 "createdAt": "2026-01-02T17:16:02.803Z",
                 "updatedAt": "2026-01-02T17:16:02.801Z",
@@ -195,9 +261,9 @@
                     }
                 ],
                 "userTraffic": {
-                    "usedTrafficBytes": 493753661915,
-                    "lifetimeUsedTrafficBytes": 493753661915,
-                    "onlineAt": "2026-04-01T09:46:15.037Z",
+                    "usedTrafficBytes": 503406410992,
+                    "lifetimeUsedTrafficBytes": 503406410992,
+                    "onlineAt": "2026-04-02T21:35:30.043Z",
                     "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
                     "firstConnectedAt": "2026-01-02T17:32:00.044Z"
                 }
@@ -222,8 +288,6 @@
                 "ssPassword": "f7DKbUW4EDXN-gbptLgRqtgmdt061ZY9",
                 "lastTriggeredThreshold": 0,
                 "subRevokedAt": null,
-                "subLastUserAgent": "v2raytun/ios",
-                "subLastOpenedAt": "2026-04-01T05:47:13.585Z",
                 "lastTrafficResetAt": null,
                 "createdAt": "2026-01-02T17:12:28.729Z",
                 "updatedAt": "2026-04-01T08:03:52.449Z",
@@ -235,9 +299,9 @@
                     }
                 ],
                 "userTraffic": {
-                    "usedTrafficBytes": 697641404261,
-                    "lifetimeUsedTrafficBytes": 697641404261,
-                    "onlineAt": "2026-04-01T09:17:30.091Z",
+                    "usedTrafficBytes": 699991855591,
+                    "lifetimeUsedTrafficBytes": 699991855591,
+                    "onlineAt": "2026-04-02T21:35:30.043Z",
                     "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
                     "firstConnectedAt": "2026-01-02T17:13:30.067Z"
                 }
@@ -262,8 +326,6 @@
                 "ssPassword": "zVvRFJUuCpQ6DH6Mz0GCakkCtPh0P-4E",
                 "lastTriggeredThreshold": 0,
                 "subRevokedAt": null,
-                "subLastUserAgent": "v2raytun/ios",
-                "subLastOpenedAt": "2026-04-01T08:54:26.323Z",
                 "lastTrafficResetAt": null,
                 "createdAt": "2026-01-02T17:04:46.447Z",
                 "updatedAt": "2026-01-02T17:04:46.446Z",
@@ -275,9 +337,9 @@
                     }
                 ],
                 "userTraffic": {
-                    "usedTrafficBytes": 716763276050,
-                    "lifetimeUsedTrafficBytes": 716763276050,
-                    "onlineAt": "2026-04-01T08:56:45.025Z",
+                    "usedTrafficBytes": 723246459164,
+                    "lifetimeUsedTrafficBytes": 723246459164,
+                    "onlineAt": "2026-04-02T21:35:00.028Z",
                     "lastConnectedNodeUuid": "5bd5f4c9-af41-4886-8477-e26b250fba23",
                     "firstConnectedAt": "2026-01-02T17:05:45.045Z"
                 }
@@ -285,3 +347,4 @@
         ]
     }
 }
+
