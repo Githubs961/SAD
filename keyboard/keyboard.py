@@ -1,7 +1,7 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types import BotCommand
 from aiogram import Bot
-from lexicon.lexicon import LEXICON_COMMANDS, PLANS
+from lexicon.lexicon import LEXICON_COMMANDS, PLANS, INSTRUCTION
 
 
 # Создание меню бота
@@ -49,7 +49,35 @@ def pay_keyboard(plan: str):
 def profile_keyboard(sub_url):
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="📲 Подключить устройство", callback_data="add_device",url=sub_url)],
+            [InlineKeyboardButton(text="🔗 Подключить устройство", callback_data="add_device",url=sub_url)],
             [InlineKeyboardButton(text="📱 Мои устройства", callback_data="my_devices")]
         ]
     )
+
+
+# Инлайн клавиатура - Инструкция
+def instruction_keyboard(step: int):
+    buttons = []
+
+    if step > 1:
+        buttons.append(
+            InlineKeyboardButton(
+                text="⬅️ Назад",
+                callback_data=f"instruction:{step-1}"
+            )
+        )
+
+    if step < 5:
+        buttons.append(
+            InlineKeyboardButton(
+                text="➡️ Далее",
+                callback_data=f"instruction:{step+1}"
+            )
+        )
+
+    keyboard = [buttons]
+
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+# Инлайн клавиатура - Мои устройства

@@ -1,7 +1,13 @@
+from typing import Dict
+
 from aiogram.utils.markdown import hlink
 
 IOS = 'https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973' #Ссылка на HAPP
 ANDROID = 'https://play.google.com/store/apps/details?id=com.happproxy' #Ссылка на HAPP
+
+KONF = 'https://telegra.ph/Politika-konfidencialnosti-04-01-26'
+SOGL = 'https://telegra.ph/Polzovatelskoe-soglashenie-04-01-19'
+
 
 
 LEXICON_COMMANDS: dict[str, str] = {
@@ -13,11 +19,17 @@ LEXICON_COMMANDS: dict[str, str] = {
 
 
 LEXICON_RU: dict[str, str] = {
-    '/start': '<b>Добро пожаловать в SAD VPN !!!</b>',
-    '/help': f'Для использования SAD VPN необходимо следовать инструкции.\n'
-             f'1) Установите приложение Happ:\n'
-             f' {hlink(title="Для Iphone",url=IOS)}\n'
-             f' {hlink(title="Для Android", url=ANDROID)}',
+    '/start': f'<b>Добро пожаловать в SAD VPN ️</b>\n\n'
+              f'Получите доступ к защищённому прокси-серверу. Приемущества:\n\n'
+              f'⛔️ Без рекламы\n'
+              f'🔒 Полная приватность\n'
+              f'📱 Поддержка всех устройств\n\n'
+              f'{hlink(title="Политика конфиденциальности",url=KONF)}\n'
+              f'{hlink(title="Пользовательское соглашение",url=SOGL)}',
+    # '/help': f'После получения доступа к подписке, следуйте инструкции.\n'
+    #          f'1) Установите приложение Happ:\n'
+    #          f' {hlink(title="Для Iphone",url=IOS)}\n'
+    #          f' {hlink(title="Для Android", url=ANDROID)}',
 
     'subscription': '<b>Выберите тариф для подключения</b>',
 }
@@ -33,9 +45,9 @@ PAY_STARS = {
     "pay_2m": 3,
 }
 PAY_SBP = {
-    "paysbp_1w": 50,
-    "paysbp_1m": 150,
-    "paysbp_2m": 250,
+    "paysbp_1w": 49,
+    "paysbp_1m": 149,
+    "paysbp_2m": 249,
 }
 DAYS = {
     "pay_1w": 7,
@@ -43,3 +55,31 @@ DAYS = {
     "pay_2m": 60,
 }
 
+INSTRUCTION: dict[str, str] = {
+    'step_1': f'После получения доступа откройте страницу подписки и следуйте инструкции:\n\n'
+              f'<b>🧩 Шаг 1. Установите приложение</b>\n\n'
+              f'В блоке «Установка» выберите:\n'
+              f'ваше устройство (Windows / Android / iPhone)\n'
+              f'приложение (например HAPP)\n'
+              f'Нажмите кнопку <b>«Установить»</b>'
+    ,
+    'step_2': f'🔗 <b>Шаг 2. Добавьте подписку</b>\n\n'
+              f'После установки:\n'
+              f'Нажмите кнопку <b>«Добавить подписку»</b>\n'
+              f'Подписка автоматически добавится в приложение\n\n'
+              f'✅ Ничего копировать не нужно'
+    ,
+    'step_3': f'📲 <b>Альтернативный способ</b> (скопировать вручную)\n\n'
+              f'Нажмите на значок 🔗 (ссылка)\n'
+              f'Скопируйте ссылку\n'
+              f'Вставьте в приложение'
+    ,
+    'step_4': f'📷 <b>Через QR-код</b>\n\n'
+              f'Нажмите на значок 🔗\n'
+              f'Откройте QR-код\n'
+              f'Отсканируйте его в приложении'
+    ,
+    'step_5': f'💬 Нужна помощь?'
+              f'Напишите в поддержку — поможем подключиться 🙌 '
+              f'@monako113'
+}

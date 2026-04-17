@@ -60,7 +60,7 @@ user_cache: Dict[str, Dict] = {}
 cache_time: Dict[str, float] = {}
 locks: Dict[str, asyncio.Lock] = {}  # защита от одновременной записи
 
-TTL_SECONDS = 120 # 2 минуты — хранится кэш
+TTL_SECONDS = 180 # 3 минуты — хранится кэш
 
 
 # Функция для очистки кэша (можно вызывать после создания/продления подписки)

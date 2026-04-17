@@ -1,5 +1,3 @@
-from email.policy import default
-
 from aiogram import Router, types, Bot
 from aiogram.types import Message, CallbackQuery, PreCheckoutQuery, LabeledPrice
 from aiogram.filters import Command, CommandStart, or_f, CommandObject
@@ -11,18 +9,18 @@ from database import grant_subscription, save_payment, get_db_connection
 from remnawave_api.api_remnavawe import (get_user,
                                          create_new_user,
                                          format_expire_date, invalidate_user_cache)
-from keyboard.keyboard import keyboard, sub_keyboard, pay_keyboard, profile_keyboard
-from lexicon.lexicon import LEXICON_RU, PLANS, PAY_STARS
-
+from keyboard.keyboard import keyboard, sub_keyboard, pay_keyboard, profile_keyboard, instruction_keyboard
+from lexicon.lexicon import LEXICON_RU, PLANS, PAY_STARS, INSTRUCTION
 
 # Инициализируем роутер уровня модуля
 router = Router()
+
 
 @router.message(CommandStart())
 async def process_start_command(message: Message):
    # if await is_admin(message.chat.id):
         await message.answer(text=LEXICON_RU['/start'],
-                             reply_markup=keyboard)
+                             reply_markup=keyboard,disable_web_page_preview=True)
 
 
 @router.message(Command(commands='help'))
@@ -30,6 +28,7 @@ async def process_help_command(message: Message):
     await message.answer(text=LEXICON_RU['/help'],
                          disable_web_page_preview=True
                          )
+
 
 #
 @router.message(or_f(F.text == "🔐 Получить доступ", Command("access")))
@@ -51,10 +50,10 @@ async def show_profile(message: Message):
     user = await get_user(str(message.from_user.id))
     # если пользователь найден
     if user:
-        await message.answer(text= f"🔹<b>Логин:</b> {user['username']}\n"
-                                   f"❗️<b>Статус подписки:</b> {user['status']}\n"
-                                   f"📅<b> Действует до:</b> {format_expire_date(user['expire_at'])}\n"
-                                   f"📱 <b>Лимит устройств:</b> {user['hwid_device_limit']}",
+        await message.answer(text= f"🆔 <b>ID:</b> {user['username']}\n\n"
+                                   f"⚡️ ️<b>Статус подписки:</b> {user['status']}\n"
+                                   f"📅 <b> Действует до:</b> {format_expire_date(user['expire_at'])}\n\n"
+                                   f"📱 <b>Лимит устройств:</b> {user['hwid_device_limit']}\n",
                              reply_markup=profile_keyboard(user['subscription_url']),
                              disable_web_page_preview=True
                          )
@@ -66,9 +65,24 @@ async def show_profile(message: Message):
 
 @router.message(F.text == 'ℹ️ Инструкция')
 async def manual(message: Message):
-    await message.answer(text= LEXICON_RU['/help'],
+    await message.answer(text= f'{INSTRUCTION["step_1"]}',
+                         reply_markup=instruction_keyboard(1),
                          disable_web_page_preview=True
                          )
+
+# Обработка нажатий на клавиатуру инструкции
+@router.callback_query(F.data.startswith("instruction:"))
+async def navigate_instruction(callback: CallbackQuery):
+    step = int(callback.data.split(":")[1])
+
+    await callback.message.edit_text(
+        INSTRUCTION[f"step_{step}"],
+        reply_markup=instruction_keyboard(step),
+        parse_mode="HTML"
+    )
+
+    await callback.answer()
+
 
 # Обработка при выборе длительности подписки
 @router.callback_query(F.data.in_(PLANS.keys()))
@@ -107,98 +121,13 @@ async def click_add_device(callback: CallbackQuery):
         # keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
         #     [types.InlineKeyboardButton(text="⬅️ Назад", callback_data="/profile")]
         # ])
-        await callback.message.answer(text=text,parse_mode="HTML")
+        await callback.message.answer(text=text,parse_mode="HTML") #добавить клавиатуру с устр-вами для удаления
 
     await callback.answer()
 
 
 
-# # Обработчик оплаты Telegram Stars
-# @router.callback_query(F.data.in_(PAY_STARS.keys()))
-# async def pay_stars(callback: CallbackQuery):
-#     plan = callback.data
-#     sub_text = f'sub_{plan.split("_")[1]}' # переменная для текста из lexicon.py
-#     prices = [LabeledPrice(label='XTR', amount=PAY_STARS[plan])]
-#
-#     await callback.message.answer_invoice(
-#         title=f'VPN подписка',
-#         description=f'Тариф: {PLANS[sub_text]}',
-#         payload=plan, # важно! уникальный payload
-#         currency='XTR',
-#         prices=prices,
-#         # is_test= True,  # ← Вот это главное для теста!
-#     )
-#     await callback.answer()
-#
-#
-#
-# # Подтверждение платежа и проверка есть ли подписка
-# @router.pre_checkout_query()
-# async def pre_checkout(pre_checkout_q: PreCheckoutQuery):
-#     await pre_checkout_q.answer(ok=True)
-#
-#
-# # Возврат звезд по id транзакции(refund пробел transaction_id)
-# @router.message(Command('refund'))
-# async def command_refund(message: Message, bot: Bot, command: CommandObject) -> None:
-#     transaction_id = command.args
-#     try:
-#         await  bot.refund_star_payment(
-#             user_id=message.from_user.id,
-#             telegram_payment_charge_id=transaction_id
-#         )
-#     except Exception as e:
-#         print(e)
-#
-#
-# # Проверка что платеж STARTS прошел и выполняем условие.....
-# # @router.message(F.successful_payment)
-# # async def payment(message:Message):
-# #     await message.answer(f'{message.successful_payment.telegram_payment_charge_id}')
-#
-#
-# @router.message(F.successful_payment)
-# async def successful_payment(message: Message):
-#     payment = message.successful_payment
-#     user_id = message.from_user.id
-#     plan_key = payment.invoice_payload
-#     charge_id = payment.telegram_payment_charge_id
-#
-#     try:
-#         # 1. Сохраняем платёж
-#         saved = await save_payment(
-#             user_id=user_id,
-#             charge_id=charge_id,
-#             plan_key=plan_key,
-#             amount=payment.total_amount
-#         )
-#
-#         if not saved:
-#             await message.answer("Этот платёж уже был обработан ранее.")
-#             return
-#
-#         # 2. Выдаём подписку
-#         success = await grant_subscription(
-#             user_id=user_id,
-#             plan_key=plan_key,
-#             telegram_id=user_id,
-#             username=message.from_user.username
-#         )
-#
-#         if success:
-#             await message.answer(
-#                 f"✅ Оплата прошла успешно!\n"
-#                 f"Подписка активирована.\n\n"
-#                 f"Проверьте /profile"
-#             )
-#             # Очищаем кэш пользователя
-#             await invalidate_user_cache(str(user_id))
-#         else:
-#             await message.answer("❌ Ошибка активации подписки. Обратитесь в поддержку.")
-#
-#     except Exception as e:
-#         print(f"Ошибка обработки платежа: {e}")
-#         await message.answer("❌ Произошла ошибка. Мы уже уведомлены.")
+
 
 
 

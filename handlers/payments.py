@@ -78,7 +78,7 @@ async def successful_payment(message: Message):
     user_id = message.from_user.id
     plan_key = payment.invoice_payload
     charge_id = payment.telegram_payment_charge_id
-
+   # добавить проверку что currency в payment = XTR или равно другой валюте и выполнять действия(сохранять платеж и выдавать подписку)
     try:
         # 1. Сохраняем платёж
         saved = await save_payment(
