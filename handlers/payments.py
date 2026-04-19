@@ -3,6 +3,7 @@ from aiogram.types import CallbackQuery, LabeledPrice, PreCheckoutQuery, Message
 from aiogram.filters import Command, CommandObject
 
 from database import save_payment, grant_subscription
+from handlers.admins import admin_filter
 from lexicon.lexicon import PAY_STARS, PLANS, PAY_SBP, DAYS
 from remnawave_api.api_remnavawe import invalidate_user_cache, add_days
 
@@ -34,7 +35,7 @@ async def pay_stars(callback: CallbackQuery):
 async def pay_sbp(callback: CallbackQuery):
     plan = callback.data
     # Здесь будет вызов API агрегатора (payment.kassa.ai, ЮKassa, Тинькофф и т.д.)
-    await callback.answer("🔄 Генерируем ссылку на оплату по СБП...", show_alert=True)
+    await callback.answer("🔄 Генерируем ссылку на оплату по СБП...")
 
     # Пока заглушка
     await callback.message.answer(
@@ -54,7 +55,7 @@ async def pre_checkout(pre_checkout_q: PreCheckoutQuery):
 
 
 # Возврат STARS по id транзакции(refund пробел transaction_id)
-@payments_router.message(Command('refund'))
+@payments_router.message(Command('refund'),admin_filter)
 async def command_refund(message: Message, bot: Bot, command: CommandObject) -> None:
     transaction_id = command.args
     try:

@@ -55,6 +55,14 @@ def profile_keyboard(sub_url):
     )
 
 
+# Инлайн клавиатура - Мои устройства
+def devices_keyboard():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="⬅️ Назад", callback_data="back_to_profile")]
+        ]
+    )
+
 # Инлайн клавиатура - Инструкция
 def instruction_keyboard(step: int):
     buttons = []
@@ -76,7 +84,12 @@ def instruction_keyboard(step: int):
         )
 
     keyboard = [buttons]
-
+    keyboard.append(
+        [InlineKeyboardButton(
+            text="🆘 Написать в поддержку",
+            callback_data="support_contact",  url="https://t.me/monako113"
+        )]
+    )
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
 

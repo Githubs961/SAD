@@ -1,6 +1,8 @@
 import json
 import os
 from functools import lru_cache
+import aiohttp
+import requests
 from dotenv import load_dotenv
 import asyncio
 from datetime import datetime, timedelta
@@ -13,7 +15,8 @@ from remnawave.models import (UsersResponseDto,
                               CreateInternalSquadRequestDto,
                               TelegramUserResponseDto,
                               HwidUserDeviceDto,
-                              GetUserHwidDevicesResponseDto, UpdateUserRequestDto)
+                              UpdateUserRequestDto,
+                              GetBandwidthStatsResponseDto)
 
 
 load_dotenv()  # вызов переменных окружения, файл ".env"
@@ -112,7 +115,7 @@ async def get_user(telegram_id: str) -> Optional[dict]:
 # Создание пользователя и выдача пробного периода
 async def create_new_user(username: str,
                       expire_days: int = 3,
-                      traffic_limit_bytes: int = 10,
+                      traffic_limit_bytes: int = 50,
                       telegram_id: Optional[str] = None,
                       email: Optional[str] = None,
                       active_internal_squads: list = None,
@@ -175,7 +178,6 @@ async def add_days(telegram_id: str, days:int):
         return None
 
 
-
 # Преобразование даты окончания подписки в норм вид
 def format_expire_date(expire_str: datetime) -> str:
     if not expire_str:
@@ -191,6 +193,24 @@ def format_expire_date(expire_str: datetime) -> str:
         return "—"
 
 
+# трафик на ноде
+async def get_node_user_stats(node_uuid: str):
+    url = f"https://panelsubarikvpn.mooo.com/api/bandwidth-stats/nodes/{node_uuid}/users"
+
+    params = {
+        "start": "2026-04-11",
+        "end": "2026-04-17",
+        "topUsersLimit": 10000
+    }
+
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params, headers=headers, cookies={secret_name: secret_value}) as resp:
+            data = await resp.json()
+            return data
 
 #для тестирования
 async def main():
@@ -199,19 +219,26 @@ async def main():
     await add_days('758504107',10)
 
     response: UsersResponseDto = await remnawave.users.get_users_by_telegram_id('758504107')
-    # total_users: int = response.total
-    # users: list[UserResponseDto] = response.users
-    # print("Total users: ", total_users)
-    # print("List of users: ", users)
 
 
     user = response.root[0].model_dump()
     print(user['uuid'])
 
-    devices: HwidUserDeviceDto = await remnawave.hwid.get_hwid_user('7c2738ca-dce1-44b3-8bcb-6a2b000ee217')
 
-    print(devices.devices)
-    print(len(devices.devices))
+    uuid = 'a2fcefb8-ee25-484a-8fb9-89ef8f1145ec' # id ноды яндекс
+
+    print(await get_node_user_stats(uuid))
+    # traffic: GetBandwidthStatsResponseDto = remnawave.bandwidthstats.get_stats_nodes_usage()
+    # resp_band = await remnawave.nodes.get_all_nodes()
+    # print(resp_band)
+
+
+
+    # devices: HwidUserDeviceDto = await remnawave.hwid.get_hwid_user('7c2738ca-dce1-44b3-8bcb-6a2b000ee217')
+
+    # print(devices.devices)
+    # print(len(devices.devices))
+
 
 
     data = await get_user('758504107')

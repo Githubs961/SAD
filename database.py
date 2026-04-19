@@ -107,3 +107,5 @@ async def grant_subscription(user_id: int, plan_key: str, telegram_id: int = Non
         return False
     finally:
         conn.close()
+
+
