@@ -4,8 +4,6 @@ from aiogram.filters import Command, CommandStart, or_f, CommandObject
 from aiogram import F
 from datetime import datetime
 from aiogram.utils.markdown import hlink
-
-from database import grant_subscription, save_payment, get_db_connection
 from remnawave_api.api_remnavawe import (get_user,
                                          create_new_user,
                                          format_expire_date, invalidate_user_cache)
@@ -31,14 +29,14 @@ async def process_start_command(message: Message):
 #                          )
 
 
-#
+
 @router.message(or_f(F.text == "🔐 Получить доступ", Command("access")))
 async def subscription_list(message: Message):
     # Проверка что нет пользователя с таким tg_id и после выдать пробную подписку
     if not await get_user(str(message.from_user.id)): #если пользователя нет то создаем
         sub_url = await create_new_user(telegram_id=str(message.from_user.id),
                                          username=message.from_user.username)# ссылка для подключения
-        await message.answer(text=f'🎁 Пробный период 3 дня активирован\n\n 🏡 Перейдите в Личный кабинет для использования',# Ссылка для подключения:\n{sub_url}
+        await message.answer(text=f'🎁 Пробный период 3 дня активирован\n\n Для подключения перейдите в 🏡 Личный кабинет ',# Ссылка для подключения:\n{sub_url}
                              reply_markup=sub_keyboard)
     else:
         await message.answer(text= LEXICON_RU['subscription'],

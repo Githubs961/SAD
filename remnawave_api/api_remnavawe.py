@@ -86,11 +86,14 @@ async def get_user(telegram_id: str) -> Optional[dict]:
         now = datetime.utcnow().timestamp()
         if (telegram_id in user_cache and
                 now - cache_time.get(telegram_id, 0) < TTL_SECONDS):
+            print(f"[DEBUG] Возвращаю из кэша для {telegram_id}")
             return user_cache[telegram_id]
     # 2. Если в кэше нет или устарел — идём в Remnawave
+    print(f"[DEBUG] Кэш устарел или пуст, иду в API для {telegram_id}")
     try:
         response: TelegramUserResponseDto =await remnawave.users.get_users_by_telegram_id(telegram_id)
         if not response:
+            print(f"[DEBUG] Пользователь {telegram_id} не найден в API")
             return None
 
         # Преобразуем в чистый dict
@@ -106,7 +109,12 @@ async def get_user(telegram_id: str) -> Optional[dict]:
             user_cache[telegram_id] = user
             cache_time[telegram_id] = datetime.utcnow().timestamp()
         # user_cache.set(telegram_id, user)
+        print(f"[DEBUG] Пользователь {telegram_id} сохранён в кэш")
         return  user # возвращаем словарь - информация о пользователе
+
+    except asyncio.TimeoutError:
+        print(f"[DEBUG] Таймаут API для {telegram_id}")
+        return None
     except Exception as e:
         print(f"Ошибка при получении пользователя {telegram_id}: {e}")
         return None
@@ -172,6 +180,7 @@ async def add_days(telegram_id: str, days:int):
                                             uuid=user["uuid"],
                                             expire_at=new_expires.isoformat()
         ))
+        await invalidate_user_cache(str(telegram_id))
         return True
     except Exception as e:
         print(f"Ошибка при получении пользователя {telegram_id}: {e}")

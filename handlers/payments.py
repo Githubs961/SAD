@@ -1,14 +1,27 @@
 from aiogram import Router, F, Bot
-from aiogram.types import CallbackQuery, LabeledPrice, PreCheckoutQuery, Message
+from aiogram.types import CallbackQuery, LabeledPrice, PreCheckoutQuery, Message, InlineKeyboardMarkup, \
+    InlineKeyboardButton
 from aiogram.filters import Command, CommandObject
-
-from database import save_payment, grant_subscription
+from database import save_payment, get_active_payment, update_db
 from handlers.admins import admin_filter
-from lexicon.lexicon import PAY_STARS, PLANS, PAY_SBP, DAYS
+from lexicon.lexicon import PAY_STARS, PLANS, PAY_SBP, DAYS, PAYMENT_STATUS_MESSAGES
 from remnawave_api.api_remnavawe import invalidate_user_cache, add_days
+import uuid
+import os
+from dotenv import load_dotenv
+from platega import Platega
+
+
+
+MERCHANT_ID = os.getenv('MERCHANT_ID')
+PLATEGA_API = os.getenv('PLATEGA_API')
 
 # Инициализируем роутер
 payments_router = Router()
+
+
+#Подключение к Platega.io
+platega = Platega(merchant_id=MERCHANT_ID,secret=PLATEGA_API)
 
 
 
@@ -22,7 +35,7 @@ async def pay_stars(callback: CallbackQuery):
     await callback.message.answer_invoice(
         title=f'VPN подписка',
         description=f'Тариф: {PLANS[sub_text]}',
-        payload=plan, # важно! уникальный payload
+        payload=plan, # важно! желательно уникальный payload
         currency='XTR',
         prices=prices,
         # is_test= True,  # ← Вот это главное для теста!
@@ -30,21 +43,122 @@ async def pay_stars(callback: CallbackQuery):
     await callback.answer()
 
 
-# СБП (через payment.kassa.ai или другой агрегатор)
+
+# СБП (через Platega)
 @payments_router.callback_query(F.data.in_(PAY_SBP.keys()))
 async def pay_sbp(callback: CallbackQuery):
     plan = callback.data
-    # Здесь будет вызов API агрегатора (payment.kassa.ai, ЮKassa, Тинькофф и т.д.)
-    await callback.answer("🔄 Генерируем ссылку на оплату по СБП...")
+    sub_text = f'sub_{plan.split("_")[1]}'  # переменная для текста из lexicon.py
 
-    # Пока заглушка
-    await callback.message.answer(
-        "💳 Оплата по СБП\n\n"
-        "Сейчас мы генерируем ссылку...\n"
-        "(Пока в разработке)"
+    # 1. ищем существующий платеж
+    existing = get_active_payment(callback.from_user.id, plan)
+    if existing:
+        payment_url = existing["redirect"]
+        transaction_id = existing["transactionId"]
+        #payment_url = platega.get_payment_status(existing["transactionId"])["redirect"]
+    # 2. Если нет , то создаем платеж
+    else:
+        payment = platega.create_payment(
+
+            amount=PAY_SBP[plan],
+            currency="RUB",
+            payment_method=Platega.METHOD_SBP_QR,
+            description=f"Подписка {PLANS[sub_text]}",
+            payload=str(uuid.uuid4())  # ОЧЕНЬ ВАЖНО уникальный
+        )
+        await save_payment(
+            user_id=callback.from_user.id,
+            provider="Platega",
+            status="PENDING",
+            transactionId=payment["transactionId"],
+            plan_key=plan,
+            amount=PAY_SBP[plan],
+            currency="RUB",
+            redirect=payment["redirect"]
+        )
+
+        payment_url = payment["redirect"]
+        transaction_id = payment["transactionId"] # для проверки оплаты
+    # кнопка проверить статус(можно сделать) или сделать функцию которая будет проверять
+
+    # status = platega.get_payment_status(payment["transactionId"])
+    # if Platega.is_success_status(status["status"]):
+    # ✅ выдать доступ
+
+
+    await callback.message.edit_text("💳 Оплатите подписку:",
+    reply_markup=InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(
+                text="💰 Оплатить",
+                url=payment_url
+            )],
+            [InlineKeyboardButton(
+                text="🔄 Проверить оплату",
+                callback_data=f"check_{transaction_id}"
+            )],
+            [InlineKeyboardButton(
+                text="❌ Отмена",
+                callback_data=sub_text #Возвращаемся в тот тариф который выбирали
+            )]
+        ]
     )
+    )
+    await callback.answer()
 
 
+
+
+# Проверка оплаты Platega
+@payments_router.callback_query(F.data.startswith("check_"))
+async def check_payment(callback: CallbackQuery):
+    transaction_id = callback.data.split("_")[1]
+
+    status_data = platega.get_payment_status(transaction_id)
+    status = status_data["status"]
+
+    row = update_db(status, transaction_id)
+
+    if not row:
+        await callback.answer("❌ Платёж не найден", show_alert=True)
+        return
+
+    # ✅ УСПЕХ
+    if Platega.is_success_status(status):
+
+        if row["old_status"] == "CONFIRMED":
+            await callback.answer("⚠️ Уже оплачено", show_alert=True)
+            return
+
+        user_id = row["user_id"]
+        plan_key = row["plan_key"]
+
+        await add_days(
+            telegram_id=str(user_id),
+            days=DAYS[plan_key]
+        )
+
+        await callback.message.edit_text(
+            PAYMENT_STATUS_MESSAGES[status]
+        )
+        return
+
+    # ⏳ ОЖИДАНИЕ (без спама)
+    if status == "PENDING":
+        await callback.answer(
+            PAYMENT_STATUS_MESSAGES[status],
+            show_alert=True
+        )
+        return
+
+    # ❌ ОТМЕНА / ОШИБКА
+    try:
+        await callback.message.edit_text(
+            PAYMENT_STATUS_MESSAGES.get(status, f"Статус: {status}")
+        )
+    except:
+        pass
+    await callback.answer()
 
 
 
@@ -52,6 +166,51 @@ async def pay_sbp(callback: CallbackQuery):
 @payments_router.pre_checkout_query()
 async def pre_checkout(pre_checkout_q: PreCheckoutQuery):
     await pre_checkout_q.answer(ok=True)
+
+
+
+# Проверка оплаты  выдача подписки STARS
+@payments_router.message(F.successful_payment)
+async def successful_payment(message: Message):
+    payment = message.successful_payment
+    user_id = message.from_user.id
+    plan_key = payment.invoice_payload
+    transactionId = payment.telegram_payment_charge_id
+   # добавить проверку что currency в payment = XTR или равно другой валюте и выполнять действия(сохранять платеж и выдавать подписку)
+    try:
+        # 1. Сохраняем платёж
+        saved = await save_payment(
+
+            user_id=user_id,
+            transactionId=transactionId,
+            plan_key=plan_key,
+            amount=payment.total_amount,
+            provider= 'STARS',
+            status='CONFIRMED',
+            currency=payment.currency
+        )
+
+        if not saved:
+            await message.answer("Этот платёж уже был обработан ранее.")
+            return
+
+        # 2. Выдаём подписку
+        success = await add_days(telegram_id=str(user_id),days=DAYS[plan_key]) # количество дней добавленных к подписке
+        if success:
+            await message.answer(
+                f"✅ Оплата прошла успешно!\n"
+                f"Подписка активирована.\n\n"
+                f"Проверьте Личный кабинет"
+            )
+            # # Очищаем кэш пользователя( перенес функцию в addd days)
+            # await invalidate_user_cache(str(user_id))
+        else:
+            await message.answer("❌ Ошибка активации подписки. Обратитесь в поддержку.")
+
+    except Exception as e:
+        print(f"Ошибка обработки платежа: {e}")
+        await message.answer("❌ Произошла ошибка. Обратитесь в поддержку.")
+
 
 
 # Возврат STARS по id транзакции(refund пробел transaction_id)
@@ -65,52 +224,3 @@ async def command_refund(message: Message, bot: Bot, command: CommandObject) -> 
         )
     except Exception as e:
         print(e)
-
-
-# Проверка что платеж STARTS прошел и выполняем условие.....
-# @payments_router.message(F.successful_payment)
-# async def payment(message:Message):
-#     await message.answer(f'{message.successful_payment.telegram_payment_charge_id}')
-
-
-@payments_router.message(F.successful_payment)
-async def successful_payment(message: Message):
-    payment = message.successful_payment
-    user_id = message.from_user.id
-    plan_key = payment.invoice_payload
-    charge_id = payment.telegram_payment_charge_id
-   # добавить проверку что currency в payment = XTR или равно другой валюте и выполнять действия(сохранять платеж и выдавать подписку)
-    try:
-        # 1. Сохраняем платёж
-        saved = await save_payment(
-            user_id=user_id,
-            charge_id=charge_id,
-            plan_key=plan_key,
-            amount=payment.total_amount
-        )
-
-        if not saved:
-            await message.answer("Этот платёж уже был обработан ранее.")
-            return
-
-        # 2. Выдаём подписку
-        # success = await grant_subscription(
-        #     user_id=user_id,
-        #     plan_key=plan_key,
-        #     telegram_id=user_id,
-        #     username=message.from_user.username)
-        success = await add_days(telegram_id=str(user_id),days=DAYS[plan_key]) # количество дней добавленных к подписке
-        if success:
-            await message.answer(
-                f"✅ Оплата прошла успешно!\n"
-                f"Подписка активирована.\n\n"
-                f"Проверьте Личный кабинет"
-            )
-            # Очищаем кэш пользователя
-            await invalidate_user_cache(str(user_id))
-        else:
-            await message.answer("❌ Ошибка активации подписки. Обратитесь в поддержку.")
-
-    except Exception as e:
-        print(f"Ошибка обработки платежа: {e}")
-        await message.answer("❌ Произошла ошибка. Мы уже уведомлены.")
