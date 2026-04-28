@@ -2,8 +2,8 @@ import sqlite3
 import asyncio
 from datetime import datetime, timedelta
 from pathlib import Path
-
 from lexicon.lexicon import PAY_STARS
+
 
 DB_PATH = Path("bot_database.db")
 
@@ -43,9 +43,46 @@ def init_db():
     ''')
     # Статусы   -- PENDING / CONFIRMED / CANCELED
 
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS user_traffic (
+            user_id INTEGER PRIMARY KEY,
+            node_id TEXT NOT NULL,              -- нода (Яндекс)
+            used_bytes INTEGER DEFAULT 0,       -- сколько использовано
+            traffic_limit INTEGER NOT NULL,     -- лимит (например 50GB)
+            period_start TEXT NOT NULL,         -- начало периода
+            period_end TEXT NOT NULL,           -- конец (через 30 дней)
+            last_total_bytes INTEGER DEFAULT 0, -- прошлое значение из API
+            updated_at TEXT,
+            is_active INTEGER DEFAULT 1
+        )
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            user_id INTEGER PRIMARY KEY,
+            username TEXT,
+            uuid TEXT
+        )
+    ''')
+
     conn.commit()
     conn.close()
     print("✅ База данных успешно инициализирована")
+
+
+# Сохранение пользователя в БД
+async def save_user(user_id: int, username: str, uuid: str):
+    async with db_lock:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO users (user_id, username, uuid)
+            VALUES (?, ?, ?)
+        """, (user_id, username, uuid))
+
+        conn.commit()
+        conn.close()
 
 
 # Сохранение платежа STARS
@@ -73,6 +110,7 @@ async def save_payment(user_id: int, provider: str, status: str, transactionId: 
             conn.close()
 
 
+
 # проверка существующего плвтежа Platega
 def get_active_payment(user_id: int, plan_key: str):
     conn = get_db_connection()
@@ -95,8 +133,7 @@ def get_active_payment(user_id: int, plan_key: str):
 
 
 
-
-# Проверяем и Обнавляем БД после платежа
+# Проверяем и Обнавляем БД после платежа Platega
 def update_db(status, transaction_id):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -168,3 +205,22 @@ async def expire_old_payments():
         conn.close()
 
         print("🧹 Очистка выполнена")
+
+
+
+# Трафик пользователя, для личного кабинета
+def get_user_traffic(user_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT used_bytes, traffic_limit, period_end
+        FROM user_traffic
+        WHERE user_id = ?
+    """, (user_id,))
+
+    row = cursor.fetchone()
+    conn.close()
+
+    return row
+

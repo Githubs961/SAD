@@ -6,8 +6,9 @@ from aiogram.types import CallbackQuery, LabeledPrice, PreCheckoutQuery, Message
 from aiogram.filters import Command, CommandObject
 from aiogram.utils.markdown import hlink
 
-from database import save_payment, get_active_payment, update_db, get_db_connection
+from database import save_payment, get_active_payment, update_db, get_db_connection, db_lock
 from handlers.admins import admin_filter
+from keyboard.keyboard import sub_keyboard
 from lexicon.lexicon import PAY_STARS, PLANS, PAY_SBP, DAYS, PAYMENT_STATUS_MESSAGES, KONF, SOGL
 from remnawave_api.api_remnavawe import invalidate_user_cache, add_days
 import uuid
@@ -15,7 +16,7 @@ import os
 from dotenv import load_dotenv
 from platega import Platega
 
-
+from services.services import reset_traffic, enable_user_squad
 
 MERCHANT_ID = os.getenv('MERCHANT_ID')
 PLATEGA_API = os.getenv('PLATEGA_API')
@@ -36,6 +37,7 @@ async def pay_stars(callback: CallbackQuery):
     sub_text = f'sub_{plan.split("_")[1]}' # переменная для текста из lexicon.py
     prices = [LabeledPrice(label='XTR', amount=PAY_STARS[plan])]
 
+    await callback.message.delete() # удаляю предыдущее сообщение
     await callback.message.answer_invoice(
         title=f'VPN подписка',
         description=f'Тариф: {PLANS[sub_text]}',
@@ -44,11 +46,88 @@ async def pay_stars(callback: CallbackQuery):
         prices=prices,
         # is_test= True,  # ← Вот это главное для теста!
     )
+
+
     await callback.answer()
 
 
 
-# СБП (через Platega)
+# Подтверждение платежа и проверка есть ли подписка STARS
+@payments_router.pre_checkout_query()
+async def pre_checkout(pre_checkout_q: PreCheckoutQuery):
+    await pre_checkout_q.answer(ok=True)
+
+
+
+# Проверка оплаты и выдача подписки STARS
+@payments_router.message(F.successful_payment)
+async def successful_payment(message: Message):
+    payment = message.successful_payment
+    user_id = message.from_user.id
+    plan_key = payment.invoice_payload
+    transactionId = payment.telegram_payment_charge_id
+
+    try:
+        # 1. Сохраняем платёж
+        saved = await save_payment(
+
+            user_id=user_id,
+            transactionId=transactionId,
+            plan_key=plan_key,
+            amount=payment.total_amount,
+            provider= 'STARS',
+            status='CONFIRMED',
+            currency=payment.currency
+        )
+
+        if not saved:
+            await message.answer("Этот платёж уже был обработан ранее.")
+            return
+
+        # 2. Выдаём подписку
+        success = await add_days(telegram_id=str(user_id),days=DAYS[plan_key]) # количество дней добавленных к подписке
+
+        async with db_lock:
+            # 3. Обнуляем трафик пользователю
+            await reset_traffic(user_id)
+
+            # 4. Включаю скваду Яндекс если отключена
+            await enable_user_squad(user_id)
+
+
+        if success:
+            await message.answer(
+                f"✅ Оплата прошла успешно!\n"
+                f"Подписка активирована.\n\n"
+                f"Проверьте Личный кабинет"
+            )
+            # # Очищаем кэш пользователя( перенес функцию в addd days)
+            # await invalidate_user_cache(str(user_id))
+        else:
+            await message.answer("❌ Ошибка активации подписки. Обратитесь в поддержку.")
+
+    except Exception as e:
+        print(f"Ошибка обработки платежа: {e}")
+        await message.answer("❌ Произошла ошибка. Обратитесь в поддержку.")
+
+
+
+# Возврат STARS по id транзакции(refund пробел transaction_id)
+@payments_router.message(Command('refund'),admin_filter)
+async def command_refund(message: Message, bot: Bot, command: CommandObject) -> None:
+    transaction_id = command.args
+    try:
+        await  bot.refund_star_payment(
+            user_id=message.from_user.id,
+            telegram_payment_charge_id=transaction_id
+        )
+    except Exception as e:
+        print(e)
+
+
+
+
+# СБП Создание платежа(через Platega)
 @payments_router.callback_query(F.data.in_(PAY_SBP.keys()))
 async def pay_sbp(callback: CallbackQuery):
     plan = callback.data
@@ -92,7 +171,7 @@ async def pay_sbp(callback: CallbackQuery):
 
     await callback.message.answer(f"{hlink(title='Политика конфиденциальности',url=KONF)}\n"
                                   f"{hlink(title='Пользовательское соглашение',url=SOGL)}\n\n"
-                                  f"💳 Оплата подписки:", disable_web_page_preview=True,
+                                  f"💳 Оплата подписки {PLANS[sub_text]}:", disable_web_page_preview=True,
     reply_markup=InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(
@@ -112,7 +191,6 @@ async def pay_sbp(callback: CallbackQuery):
     )
     )
     await callback.answer()
-
 
 
 
@@ -140,10 +218,18 @@ async def check_payment(callback: CallbackQuery):
         user_id = row["user_id"]
         plan_key = row["plan_key"]
 
+        # Добавляем подписку
         await add_days(
             telegram_id=str(user_id),
             days=DAYS[plan_key]
         )
+
+        async with db_lock:
+            #Обнуляем трафик пользователю
+            await reset_traffic(user_id)
+
+            # Включаю скваду Яндекс если отключена
+            await enable_user_squad(user_id)
 
         await callback.message.edit_text(
             PAYMENT_STATUS_MESSAGES[status]
@@ -169,72 +255,6 @@ async def check_payment(callback: CallbackQuery):
     except:
         pass
     await callback.answer()
-
-
-
-# Подтверждение платежа и проверка есть ли подписка
-@payments_router.pre_checkout_query()
-async def pre_checkout(pre_checkout_q: PreCheckoutQuery):
-    await pre_checkout_q.answer(ok=True)
-
-
-
-# Проверка оплаты  выдача подписки STARS
-@payments_router.message(F.successful_payment)
-async def successful_payment(message: Message):
-    payment = message.successful_payment
-    user_id = message.from_user.id
-    plan_key = payment.invoice_payload
-    transactionId = payment.telegram_payment_charge_id
-   # добавить проверку что currency в payment = XTR или равно другой валюте и выполнять действия(сохранять платеж и выдавать подписку)
-    try:
-        # 1. Сохраняем платёж
-        saved = await save_payment(
-
-            user_id=user_id,
-            transactionId=transactionId,
-            plan_key=plan_key,
-            amount=payment.total_amount,
-            provider= 'STARS',
-            status='CONFIRMED',
-            currency=payment.currency
-        )
-
-        if not saved:
-            await message.answer("Этот платёж уже был обработан ранее.")
-            return
-
-        # 2. Выдаём подписку
-        success = await add_days(telegram_id=str(user_id),days=DAYS[plan_key]) # количество дней добавленных к подписке
-        if success:
-            await message.answer(
-                f"✅ Оплата прошла успешно!\n"
-                f"Подписка активирована.\n\n"
-                f"Проверьте Личный кабинет"
-            )
-            # # Очищаем кэш пользователя( перенес функцию в addd days)
-            # await invalidate_user_cache(str(user_id))
-        else:
-            await message.answer("❌ Ошибка активации подписки. Обратитесь в поддержку.")
-
-    except Exception as e:
-        print(f"Ошибка обработки платежа: {e}")
-        await message.answer("❌ Произошла ошибка. Обратитесь в поддержку.")
-
-
-
-# Возврат STARS по id транзакции(refund пробел transaction_id)
-@payments_router.message(Command('refund'),admin_filter)
-async def command_refund(message: Message, bot: Bot, command: CommandObject) -> None:
-    transaction_id = command.args
-    try:
-        await  bot.refund_star_payment(
-            user_id=message.from_user.id,
-            telegram_payment_charge_id=transaction_id
-        )
-    except Exception as e:
-        print(e)
-
 
 
 
@@ -264,10 +284,19 @@ async def auto_check_payments(bot):
                 row = update_db(status, p["transactionId"])
 
                 if status == "CONFIRMED" and row and row["old_status"] != "CONFIRMED":
+                    #Выдача подписки
                     await add_days(
                         telegram_id=str(p["user_id"]),
                         days=DAYS[p["plan_key"]]
                     )
+
+                    async with db_lock:
+                        # Обнуляем трафик пользователю
+                        await reset_traffic(p["user_id"])
+
+                        # Включаю скваду Яндекс если отключена
+                        await enable_user_squad(p["user_id"])
+
 
                     # 👉 уведомляем пользователя
                     await bot.send_message(

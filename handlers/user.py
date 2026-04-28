@@ -4,12 +4,15 @@ from aiogram.filters import Command, CommandStart, or_f, CommandObject
 from aiogram import F
 from datetime import datetime
 from aiogram.utils.markdown import hlink
+
+from database import save_user, get_user_traffic
 from remnawave_api.api_remnavawe import (get_user,
                                          create_new_user,
-                                         format_expire_date, invalidate_user_cache)
+                                         format_expire_date)
 from keyboard.keyboard import keyboard, sub_keyboard, pay_keyboard, profile_keyboard, instruction_keyboard, \
     devices_keyboard
 from lexicon.lexicon import LEXICON_RU, PLANS, PAY_STARS, INSTRUCTION
+from services.services import init_traffic
 
 # Инициализируем роутер уровня модуля
 router = Router()
@@ -34,9 +37,17 @@ async def process_start_command(message: Message):
 async def subscription_list(message: Message):
     # Проверка что нет пользователя с таким tg_id и после выдать пробную подписку
     if not await get_user(str(message.from_user.id)): #если пользователя нет то создаем
-        sub_url = await create_new_user(telegram_id=str(message.from_user.id),
-                                         username=message.from_user.username)# ссылка для подключения
-        await message.answer(text=f'🎁 Пробный период 3 дня активирован\n\n Для подключения перейдите в 🏡 Личный кабинет ',# Ссылка для подключения:\n{sub_url}
+        user = await create_new_user(telegram_id=str(message.from_user.id),
+                                         username=message.from_user.username)# дынные пользователя
+        if user:
+            await save_user(
+                user_id=int(message.from_user.id),
+                username=user["username"],
+                uuid=user["uuid"]
+            )
+
+            await init_traffic(int(message.from_user.id))
+        await message.answer(text=f'🎁 Пробный период 3 дня активирован\n\nДля подключения перейдите в\n 🏡 Личный кабинет ',# Ссылка для подключения:\n{sub_url}
                              reply_markup=sub_keyboard)
     else:
         await message.answer(text= LEXICON_RU['subscription'],
@@ -46,17 +57,27 @@ async def subscription_list(message: Message):
 
 @router.message(or_f(F.text == "🏡 Личный кабинет", Command("profile"))) #or Command(commands='profile')
 async def show_profile(message: Message):
+    # Отправляем сообщение-загрузку
+    # loading_msg = await message.answer("⏳ Загружаю данные вашего профиля...")
+
     user = await get_user(str(message.from_user.id))
     # если пользователь найден
     if user:
+        # await loading_msg.delete()
+        traffic = get_user_traffic(message.from_user.id)
+        used_gb = round(traffic["used_bytes"] / 1024 ** 3, 2)
+        limit_gb = round(traffic["traffic_limit"] / 1024 ** 3, 2)
         await message.answer(text= f"🆔 <b>ID:</b> {user['username']}\n\n"
-                                   f"⚡️ <b>Статус подписки:</b> {user['status']}\n"
-                                   f"📅 <b> Действует до:</b> {format_expire_date(user['expire_at'])}\n\n"
-                                   f"📱 <b>Лимит устройств:</b> {user['hwid_device_limit']}\n",
+                                   f"⚡️<b>Статус подписки:</b> {user['status']}\n"
+                                   f" └ Действует до: {format_expire_date(user['expire_at'])}\n\n"
+                                   f"📊 <b>Трафик:</b>\n"
+                                   f"├ Обычные локации - ♾️ GB\n"
+                                   f"└ LTE - {used_gb} / {limit_gb} GB\n\n"
+                                   f"📱 <b>Лимит устройств:</b> {user['hwid_device_limit']}",
                              reply_markup=profile_keyboard(user['subscription_url']),
                              disable_web_page_preview=True
                          )
-    else:
+    if not user:
         await message.answer(text='❌ У вас нет действующей подписки\n '
                                   '🔒 Получите доступ')
 
@@ -69,16 +90,21 @@ async def back_to_profile(callback: CallbackQuery):
     if user:
         # Редактируем текущее сообщение (то, где был список устройств)
         # и показываем в нём профиль
-        await callback.message.edit_text(
-            text=f"🆔 <b>ID:</b> {user['username']}\n\n"
-                 f"⚡️ <b>Статус подписки:</b> {user['status']}\n"
-                 f"📅 <b>Действует до:</b> {format_expire_date(user['expire_at'])}\n\n"
-                 f"📱 <b>Лимит устройств:</b> {user['hwid_device_limit']}\n",
+        traffic = get_user_traffic(callback.from_user.id)
+        used_gb = round(traffic["used_bytes"] / 1024 ** 3, 2)
+        limit_gb = round(traffic["traffic_limit"] / 1024 ** 3, 2)
+        await callback.message.edit_text(text=f"🆔 <b>ID:</b> {user['username']}\n\n"
+                                              f"⚡️<b>Статус подписки:</b> {user['status']}\n"
+                                              f" └ Действует до: {format_expire_date(user['expire_at'])}\n\n"
+                                              f"📊 <b>Трафик:</b>\n"
+                                              f"├ Обычные локации - ♾️ GB\n"
+                                              f"└ LTE - {used_gb} / {limit_gb} GB\n\n"
+                                              f"📱 <b>Лимит устройств:</b> {user['hwid_device_limit']}",
             reply_markup=profile_keyboard(user['subscription_url']),
             disable_web_page_preview=True,
             parse_mode="HTML"
         )
-    else:
+    if not user:
         await callback.message.edit_text(
             text='❌ У вас нет действующей подписки\n🔒 Получите доступ'
         )
@@ -144,34 +170,3 @@ async def click_add_device(callback: CallbackQuery):
         await callback.message.edit_text(text=text,parse_mode="HTML", reply_markup=devices_keyboard()) #добавить клавиатуру с устр-вами для удаления
 
     await callback.answer()
-
-
-
-
-
-
-
-
-# Проверка платежа для Админа /dbcheck
-# @router.message(Command("dbcheck"))
-# async def db_check(message: Message):
-#     conn = get_db_connection()
-#     cursor = conn.cursor()
-#
-#     # Проверяем платежи
-#     cursor.execute("SELECT * FROM payments ORDER BY id DESC LIMIT 5")
-#     payments = cursor.fetchall()
-#
-#     text = "Последние платежи:\n\n"
-#     for p in payments:
-#         text += f"ID: {p['id']} | CHARGE_ID: {p['telegram_payment_charge_id']} | User: {p['user_id']} | Plan: {p['plan_key']} | Amount: {p['amount']} XTR\n\n"
-#     # Проверяем подписки
-#     cursor.execute("SELECT * FROM user_subscriptions LIMIT 5")
-#     subs = cursor.fetchall()
-#
-#     text += "\n\nПодписки:\n"
-#     for s in subs:
-#         text += f"User: {s['user_id']} | Plan: {s['plan_key']} | До: {s['expire_at'][:10]}\n"
-#
-#     conn.close()
-#     await message.answer(text)

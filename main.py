@@ -8,6 +8,7 @@ from database import init_db, expire_old_payments
 from handlers import user, payments ,other
 from handlers.payments import payments_router, auto_check_payments
 from keyboard.keyboard import set_main_menu
+from services.services import traffic_worker
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -38,6 +39,10 @@ async def main():
     asyncio.create_task(auto_check_payments(bot))
     # Удаление из БД старых платежей(PENDING)
     asyncio.create_task(expire_old_payments())
+    # Автопроверка лимита трафика у пользователей
+    asyncio.create_task(traffic_worker())
+
+
 
     # Пропускаем накопившиеся апдейты и запускаем polling
     await bot.delete_webhook(drop_pending_updates=True)
