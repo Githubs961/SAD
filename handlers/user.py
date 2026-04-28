@@ -75,10 +75,10 @@ async def show_profile(message: Message):
             limit_gb = 0
         await message.answer(text= f"🆔 <b>ID:</b> {user['username']}\n\n"
                                    f"⚠️<b>Статус подписки:</b> {user['status']}\n"
-                                   f"└  Действует до: {format_expire_date(user['expire_at'])}\n\n"
+                                   f" └  Действует до: {format_expire_date(user['expire_at'])}\n\n"
                                    f"📊 <b>Трафик:</b>\n"
-                                   f"├  Обычные локации - ♾️ GB\n"
-                                   f"└  LTE - {used_gb} / {limit_gb} GB\n\n"
+                                   f" ├  Обычные локации - ♾️ GB\n"
+                                   f" └  LTE - {used_gb} / {limit_gb} GB\n\n"
                                    f"📱 <b>Лимит устройств:</b> {user['hwid_device_limit']}",
                              reply_markup=profile_keyboard(user['subscription_url']),
                              disable_web_page_preview=True
@@ -107,10 +107,10 @@ async def back_to_profile(callback: CallbackQuery):
             limit_gb = 0
         await callback.message.edit_text(text=f"🆔 <b>ID:</b> {user['username']}\n\n"
                                               f"⚠️<b>Статус подписки:</b> {user['status']}\n"
-                                              f"└  Действует до: {format_expire_date(user['expire_at'])}\n\n"
+                                              f" └  Действует до: {format_expire_date(user['expire_at'])}\n\n"
                                               f"📊 <b>Трафик:</b>\n"
-                                              f"├  Обычные локации - ♾️ GB\n"
-                                              f"└  LTE - {used_gb} / {limit_gb} GB\n\n"
+                                              f" ├  Обычные локации - ♾️ GB\n"
+                                              f" └  LTE - {used_gb} / {limit_gb} GB\n\n"
                                               f"📱 <b>Лимит устройств:</b> {user['hwid_device_limit']}",
             reply_markup=profile_keyboard(user['subscription_url']),
             disable_web_page_preview=True,
