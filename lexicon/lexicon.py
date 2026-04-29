@@ -9,9 +9,9 @@ KONF = 'https://telegra.ph/Politika-konfidencialnosti-04-01-26'
 SOGL = 'https://telegra.ph/Polzovatelskoe-soglashenie-04-01-19'
 
 #Автопроверка трафика в фоне в сек
-TRAFFIC_SEC: int = 18 #
+TRAFFIC_SEC: int = 1800 # 30 мин
 # ЧАСТОТА ПРОВЕРКИ ПЛАТЕЖА в сек
-PAYMENT_SEC: int = 120
+PAYMENT_SEC: int = 600  #10 мин
 
 
 LEXICON_COMMANDS: dict[str, str] = {
