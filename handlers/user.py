@@ -79,7 +79,7 @@ async def show_profile(message: Message):
                                    f"📊 <b>Трафик:</b>\n"
                                    f" ├  Обычные локации - ♾️ GB\n"
                                    f" └  LTE - {used_gb} / {limit_gb} GB\n\n"
-                                   f"📱 <b>Лимит устройств:</b> {user['hwid_device_limit']}",
+                                   f"📱 <b>Лимит устройств:</b> {user['hwid_device_limit']}\n\n",
                              reply_markup=profile_keyboard(user['subscription_url']),
                              disable_web_page_preview=True
                          )

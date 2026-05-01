@@ -1,6 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types import BotCommand
-from aiogram import Bot
+from aiogram import Bot, types
 from lexicon.lexicon import LEXICON_COMMANDS, PLANS, INSTRUCTION
 
 
@@ -49,7 +49,8 @@ def pay_keyboard(plan: str):
 def profile_keyboard(sub_url):
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="🔗 Подключить устройство", callback_data="add_device",url=sub_url)],
+            [InlineKeyboardButton(text="🔗 Скопировать ссылку", copy_text=types.CopyTextButton(text=sub_url))],
+            [InlineKeyboardButton(text="👤 Страница подписки", callback_data="add_device",url=sub_url)],
             [InlineKeyboardButton(text="📱 Мои устройства", callback_data="my_devices")]
         ]
     )
