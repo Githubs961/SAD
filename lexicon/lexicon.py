@@ -14,6 +14,11 @@ TRAFFIC_SEC: int = 1800 # 30 мин
 PAYMENT_SEC: int = 600  #10 мин
 
 
+SQUADS = ["6002d566-a23d-40d4-82c7-624c2a7777b0", #Латвия
+          "ecb4eace-49a3-4bdc-b9a7-190500b40e71",#Яндекс
+          "27577928-dd80-4491-b109-880cdc1ecb4f", #Нидерланды UFO
+          "27577928-dd80-4491-b109-880cdc1ecb4f"] #Финляндия
+
 LEXICON_COMMANDS: dict[str, str] = {
     '/start': 'Начало работы с ботом',
     '/access': 'Получить доступ',

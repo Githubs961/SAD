@@ -18,7 +18,7 @@ from remnawave.models import (UsersResponseDto,
                               UpdateUserRequestDto,
                               GetBandwidthStatsResponseDto)
 
-
+from lexicon.lexicon import SQUADS
 
 load_dotenv()  # вызов переменных окружения, файл ".env"
 
@@ -114,7 +114,7 @@ async def create_new_user(username: str,
 
         await remnawave.users.create_user(CreateUserRequestDto(
             username=f'{username}_{telegram_id}', # нужно уникольное имя комбинируем ник и tg_id
-            active_internal_squads=["6002d566-a23d-40d4-82c7-624c2a7777b0","ecb4eace-49a3-4bdc-b9a7-190500b40e71"],#СКВАДЫ
+            active_internal_squads=SQUADS, #СКВАДЫ Пользователя
             expire_at=expire_at,  # обязательное поле
             telegram_id=telegram_id,
             email=email,
